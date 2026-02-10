@@ -232,3 +232,33 @@ sequenceDiagram
 ```
 
 ---
+
+## 2.0 The User Model
+
+The user model helps the company add new users to the platform and secure access to protected routes.
+It enforces required identity fields and handles password safety on save.
+
+**Required fields**
+
+- `name` (string): Required user display name.
+- `email` (string): Required and validated as a proper email address.
+- `password` (string): Required, minimum length 8 characters, stored as a bcrypt hash.
+- `passwordConfirm` (string): Must match `password` during signup.
+
+**Optional fields**
+
+- `role` (string): One of `adminstrator`, `technician`, or `engineer` (defaults to `adminstrator`).
+- `passwordChangedAt` (date): Used to invalidate JWTs after a password change.
+
+**Model behavior**
+
+- Before saving, the password is hashed with bcrypt and `passwordConfirm` is removed from storage.
+- `changedPasswordAfter()` checks if a token was issued before the most recent password change.
+- `correctPassword()` compares a candidate password to the stored hash during login.
+
+**Missing Features**
+
+- This could be improved to allow user's change their password
+- Also, featires like `change my details` for specific user can be implemented to allow user's update fields like wrongly spelt names or emails
+
+---
