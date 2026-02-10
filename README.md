@@ -231,9 +231,7 @@ sequenceDiagram
     end
 ```
 
----
-
-## 2.0 The User Model
+## The User Model
 
 The user model helps the company add new users to the platform and secure access to protected routes.
 It enforces required identity fields and handles password safety on save.
@@ -262,3 +260,31 @@ It enforces required identity fields and handles password safety on save.
 - Also, featires like `change my details` for specific user can be implemented to allow user's update fields like wrongly spelt names or emails
 
 ---
+
+---
+
+## Authentication
+
+Authentication and authorization logic lives in [controller/authController.js](controller/authController.js).
+
+**Endpoints**
+
+- `POST /api/v1/users/signup` creates a user and returns a JWT.
+- `POST /api/v1/users/login` validates credentials and returns a JWT.
+
+**JWT handling**
+
+- When a user is signing up the user must provide `name, email, password and passwordConfirm (this is deleted after the password is encrypted, and should match the password field during signup) and an optional role field which defaults to administrator when no role is provided during signup`
+
+- Tokens are created with `signToken(id)` using `JWT_SECRET_KEY` and `JWT_EXPIRES_IN`.
+- Clients must send `Authorization: Bearer <token>` for protected routes.
+
+**Middleware**
+
+- `protect` verifies the bearer token, loads the user, and checks `changedPasswordAfter`, if password was changed after the token was issued, the user is asked to login again.
+- `restrictedTo(...roles)` enforces role-based access (used after `protect`).
+
+**Notes**
+
+- Login selects the password hash (`.select("+password")`) to verify credentials, since by default the password is set to `select: false`.
+- Errors are forwarded to the `Global Error Handler` through `AppError` where applicable.
