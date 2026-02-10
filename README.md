@@ -254,13 +254,6 @@ It enforces required identity fields and handles password safety on save.
 - `changedPasswordAfter()` checks if a token was issued before the most recent password change.
 - `correctPassword()` compares a candidate password to the stored hash during login.
 
-**Missing Features**
-
-- This could be improved to allow user's change their password
-- Also, featires like `change my details` for specific user can be implemented to allow user's update fields like wrongly spelt names or emails
-
----
-
 ---
 
 ## Authentication
@@ -274,7 +267,7 @@ Authentication and authorization logic lives in [controller/authController.js](c
 
 **JWT handling**
 
-- When a user is signing up the user must provide `name, email, password and passwordConfirm (this is deleted after the password is encrypted, and should match the password field during signup) and an optional role field which defaults to administrator when no role is provided during signup`
+- When a user is signing up the user must provide `name, email, password and passwordConfirm` (this is deleted after the password is encrypted, and should match the password field during signup) and an optional `role` field which defaults to `administrator` when no role is provided during signup`
 
 - Tokens are created with `signToken(id)` using `JWT_SECRET_KEY` and `JWT_EXPIRES_IN`.
 - Clients must send `Authorization: Bearer <token>` for protected routes.
@@ -288,3 +281,33 @@ Authentication and authorization logic lives in [controller/authController.js](c
 
 - Login selects the password hash (`.select("+password")`) to verify credentials, since by default the password is set to `select: false`.
 - Errors are forwarded to the `Global Error Handler` through `AppError` where applicable.
+
+**Missing Features**
+
+- This could be improved to allow user's change their password
+- Also, featires like `change my details` for specific user can be implemented to allow user's update fields like wrongly spelt names or emails
+
+---
+
+## Middleware Overview
+
+This project uses a small set of middleware functions to parse requests, guard routes, and centralize error handling. Most of them are registered in [app.js](app.js) and the auth guards live in [controller/authController.js](controller/authController.js).
+
+**Request and logging middleware**
+
+- `express.json()` parses JSON request bodies so handlers can access `req.body`.
+- `morgan("dev")` logs requests in development mode when `NODE_ENV` is set to `development`.
+
+**Routing middleware**
+
+- `app.use("/api/v1/users", userRouter)` mounts the user routes defined in [routes/userRoutes.js](routes/userRoutes.js).
+
+**Auth middleware**
+
+- `protect` verifies JWTs, loads the user record, and blocks requests without a valid token.
+- `restrictedTo(...roles)` enforces role-based access after `protect` has attached `req.user`.
+
+**Global error handling**
+
+- `app.use(/(.*)/, ...)` is a catch-all that creates a 404 when no route matches and forwards the error with `next(...)`.
+- [controller/errorController.js](controller/errorController.js) is the final error-handling middleware. It formats error responses differently for `development` vs `production`, returning stack traces only in development.
