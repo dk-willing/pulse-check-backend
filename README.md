@@ -311,3 +311,6 @@ This project uses a small set of middleware functions to parse requests, guard r
 
 - `app.use(/(.*)/, ...)` is a catch-all that creates a 404 when no route matches and forwards the error with `next(...)`.
 - [controller/errorController.js](controller/errorController.js) is the final error-handling middleware. It formats error responses differently for `development` vs `production`, returning stack traces only in development.
+
+- Asynchronous errors like `failed Database Connection` are handled gracefully so that our app does not crash. This is done by using `process.on(`unhandledRejection`)` this catches all possible skipped errors that results from asynchronous functions that wasn't well handled
+- Similarly, synchronous errors like trying to access undefined variables are handled gracefully, however these errors should really crash our apps so as to be attended to immediately. These errors are handled using `process.on(`uncaughtException`)`.
