@@ -29,7 +29,7 @@ function createTimer(monitor) {
 
   console.log(monitor.timer);
 
-  monitor.expiresAt = new Date(Date.now() + monitor.timeout * 1000);
+  monitor.expiresAt = new Date(Date.now() + monitor.timeout * 1000 + 10000);
   monitor.save();
 }
 
