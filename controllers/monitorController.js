@@ -8,7 +8,6 @@ function createTimer(monitor) {
   if (monitor.timer) {
     clearTimeout(monitor.timer);
   }
-
   monitor.timer = setTimeout(
     () => {
       if (!monitor.pause) {
@@ -25,7 +24,7 @@ function createTimer(monitor) {
         });
       }
     },
-    monitor.timeout * 1000 + 1000,
+    monitor.timeout * 1000 + 10000,
   );
 
   monitor.expiresAt = new Date(Date.now() + monitor.timeout * 1000);
@@ -60,6 +59,7 @@ exports.sendHeartbeat = catchAsync(async (req, res, next) => {
     return next(new AppError("No monitor was found with this id", 404));
   }
 
+  monitor.pause = false;
   createTimer(monitor);
 
   res.status(200).json({

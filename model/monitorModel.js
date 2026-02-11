@@ -21,10 +21,6 @@ const monitorSchema = new mongoose.Schema({
     validate: [validator.isEmail, "Please provide a valid email"],
     required: [true, "Please provide emails to receive alert message!"],
   },
-  timer: {
-    type: Date,
-    default: null,
-  },
   pause: {
     type: Boolean,
     default: false,

@@ -1,6 +1,6 @@
 const device = require("./device");
 
-const stopDevice = device("698bc6f59dc7d602ffea3bda");
+const stopDevice = device("698bcaadc1f00c1c8f7879cf");
 
 console.log("Device 123 sending heartbeat!");
 

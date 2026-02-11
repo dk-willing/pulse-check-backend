@@ -10,7 +10,7 @@ router
   .route("/")
   .post(
     auth.protect,
-    auth.restrictedTo("adminstrator"),
+    auth.restrictedTo("admin"),
     pulseController.registerMonitor,
   );
 router
