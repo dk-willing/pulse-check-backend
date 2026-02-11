@@ -27,6 +27,8 @@ function createTimer(monitor) {
     monitor.timeout * 1000 + 10000,
   );
 
+  console.log(monitor.timer);
+
   monitor.expiresAt = new Date(Date.now() + monitor.timeout * 1000);
   monitor.save();
 }
@@ -104,6 +106,17 @@ exports.restartMonitor = catchAsync(async (req, res, next) => {
     message: "Monitor started successfully",
     data: {
       monitor,
+    },
+  });
+});
+
+exports.getAllMonitors = catchAsync(async (req, res, next) => {
+  const monitors = await Monitor.find();
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      monitors,
     },
   });
 });

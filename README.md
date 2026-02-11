@@ -376,7 +376,7 @@ It enforces required identity fields and handles password safety on save.
 
 **Optional fields**
 
-- `role` (string): One of `administrator`, `technician`, or `engineer` (defaults to `administrator`).
+- `role` (string): One of `administrator`, `technician`, `user` or `engineer` (defaults to `user`).
 - `passwordChangedAt` (date): Used to invalidate JWTs after a password change.
 
 **Model behavior**
@@ -661,12 +661,12 @@ process.on("SIGINT", () => {
 4. **Observe behavior:**
    - While the simulator is running, heartbeats reset the timer every 50 seconds.
    - The monitor will stay healthy and not trigger alerts.
-   - If you stop the simulator, the monitor will time out and send an alert email.
-   - You can pause the monitor and resume it without changing the simulator.
+   - If you stop the simulator, the monitor will time out and send an alert email and also log to the console to alert user that an email was sent.
+   - You (remember to login/signup as a technician) can pause the monitor and resume it without changing the simulator.
 
 ### Notes
 
-- Heartbeat interval is **50 seconds** (so the monitor should have a `timeout` of at least 50 to avoid false alerts).
+- Heartbeat interval is **50 seconds**, this can be modified to fit companies criteria (so the monitor should have a `timeout` of at least 50 to avoid false alerts).
 - Each simulator instance sends one heartbeat every 50 seconds; multiple simulators can run simultaneously to test multiple devices.
 - Errors during heartbeat (network issues, server down) are logged to console but don't stop the simulator.
 - Use `Ctrl+C` to gracefully stop the simulator and clean up the interval.
@@ -736,6 +736,8 @@ This transforms a proof-of-concept into enterprise-grade infrastructure monitori
 - Alert includes device name, timestamp, and contact email
 
 **Why:** Console logs alone don't scale for distributed ops teams. Email creates accountability and ensures alerts reach the right person.
+
+- Additionally, JWT's can be sent securely over a cookie as an HTTPOnly field, this is to ensure that important fields like the jwt tokens cannnot be accessed and modified by the client's browser.
 
 ---
 

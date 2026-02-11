@@ -8,9 +8,17 @@ const router = express.Router();
 
 router
   .route("/")
-  .post(
+  .get(
     auth.protect,
     auth.restrictedTo("admin"),
+    pulseController.getAllMonitors,
+  );
+
+router
+  .route("/")
+  .post(
+    auth.protect,
+    auth.restrictedTo("admin", "user"),
     pulseController.registerMonitor,
   );
 router

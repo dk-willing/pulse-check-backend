@@ -30,8 +30,8 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ["admin", "technician", "engineer"],
-    default: "admin",
+    enum: ["admin", "technician", "engineer", "user"],
+    default: "user",
   },
   passwordChangedAt: Date,
 });
@@ -51,8 +51,8 @@ userSchema.methods.changedPasswordAfter = function (issueAt) {
   }
 };
 
-userSchema.methods.correctPassword = async function (cd, up) {
-  return await bcrypt.compare(up, cd);
+userSchema.methods.correctPassword = async function (cp, up) {
+  return await bcrypt.compare(cp, up);
 };
 
 const User = mongoose.model("User", userSchema);
