@@ -1,8 +1,8 @@
 const jwt = require("jsonwebtoken");
 
 const User = require("./../model/userModel");
-const catchAsync = require("./../lib/catchAsync");
-const AppError = require("./../lib/error");
+const catchAsync = require("./../utils/catchAsync");
+const AppError = require("./../utils/error");
 
 // This function creates and assigns token to authenticated users
 function signToken(id) {
@@ -45,7 +45,7 @@ exports.login = catchAsync(async (req, res, next) => {
   const user = await User.findOne({ email }).select("+password");
 
   if (!user || !(await user.correctPassword(password, user.password))) {
-    return next("Please provide a valid email and password", 400);
+    return next(new AppError("Please provide a valid email and password", 400));
   }
 
   const token = signToken(user._id);
@@ -60,7 +60,10 @@ exports.login = catchAsync(async (req, res, next) => {
 exports.protect = catchAsync(async (req, res, next) => {
   let token;
 
-  if (req.headers.authorization) {
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
     token = req.headers.authorization.split(" ")[1];
   }
 
@@ -79,7 +82,9 @@ exports.protect = catchAsync(async (req, res, next) => {
   const user = await User.findOne({ _id: decoded.id });
 
   if (!user) {
-    return next("No user found! Please ensure you are logged in", 400);
+    return next(
+      new AppError("No user found! Please ensure you are logged in", 400),
+    );
   }
 
   if (user.changedPasswordAfter(decoded.iat)) {
@@ -98,7 +103,9 @@ exports.protect = catchAsync(async (req, res, next) => {
 exports.restrictedTo = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
-      return next("You do not have permission to perform this action", 403);
+      return next(
+        new AppError("You do not have permission to perform this action", 403),
+      );
     }
 
     next();

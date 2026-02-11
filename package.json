@@ -4,7 +4,8 @@
   "description": "This challenge is designed to test your ability to bridge Computer Science fundamentals with Modern Backend Engineering.",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "nodemon server.js",
+    "start:device": "nodemon simulator/run-device.js"
   },
   "keywords": [],
   "author": "",

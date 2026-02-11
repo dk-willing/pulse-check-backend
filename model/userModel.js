@@ -50,7 +50,7 @@ userSchema.methods.changedPasswordAfter = function (issueAt) {
   }
 };
 
-user.methods.correctPassword = async function (cd, up) {
+userSchema.methods.correctPassword = async function (cd, up) {
   return await bcrypt.compare(up, cd);
 };
 
