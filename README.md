@@ -87,14 +87,15 @@ sequenceDiagram
     Auth-->>Client: 201 Created<br/>{status: "success", token, data: {name, role}}
 ```
 
-### 1.1 Register Monitor (Admin-Protected)
+### 1.1 Register Monitor (Admin & User Protected)
 
 ```mermaid
 sequenceDiagram
     actor Admin as Admin Client
+    actor User as User Client
     participant Express as Express App<br/>(app.js)
     participant Protect as auth.protect<br/>(JWT Verification)
-    participant RBAC as auth.restrictedTo<br/>("admin")
+    participant RBAC as auth.restrictedTo<br/>("admin", "user")
     participant MC as monitorController<br/>(registerMonitor)
     participant MonitorModel as Monitor Model<br/>(Mongoose)
     participant MongoDB

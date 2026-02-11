@@ -7,6 +7,7 @@ const monitorSchema = new mongoose.Schema({
     unique: [true, "A device with this name already exist"],
     minLength: [5, "A device name should be more than 5"],
     required: [true, "Please provide a name for this device"],
+    trim: true,
   },
   timeout: {
     type: Number,
