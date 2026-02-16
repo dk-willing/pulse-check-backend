@@ -399,7 +399,7 @@ Authentication and authorization logic lives in [controller/authController.js](c
 
 **JWT handling**
 
-- When a user is signing up the user must provide `name, email, password and passwordConfirm` (this is deleted after the password is encrypted, and should match the password field during signup) and an optional `role` field which defaults to `administrator` when no role is provided during signup`
+- When a user is signing up the user must provide `name, email, password and passwordConfirm` (this is deleted after the password is encrypted, and should match the password field during signup) and an optional `role` field which defaults to `user` when no role is provided during signup`
 
 - Tokens are created with `signToken(id)` using `JWT_SECRET_KEY` and `JWT_EXPIRES_IN`.
 - Clients must send `Authorization: Bearer <token>` for protected routes.
