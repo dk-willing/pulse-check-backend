@@ -331,7 +331,7 @@ Response: `200 OK` with JWT token
 
 ### Monitor Endpoints
 
-**POST `/api/v1/monitors`** — Register a new monitor (admin only)
+**POST `/api/v1/monitors`** — Register a new monitor (admin and users only)
 
 ```json
 {
