@@ -3,34 +3,40 @@ const catchAsync = require("../utils/catchAsync");
 const AppError = require("./../utils/error");
 const sendEmail = require("../utils/sendEmail");
 
-// Create timer
-function createTimer(monitor) {
-  if (monitor.timer) {
-    clearTimeout(monitor.timer);
+const timers = {}; 
+
+async function createTimer(monitor) {
+  const id = monitor._id.toString();
+
+  if (timers[id]) {
+    clearTimeout(timers[id]);
   }
-  monitor.timer = setTimeout(
-    () => {
-      if (!monitor.pause) {
-        console.log({
-          ALERT: `Device - ${monitor.name} is down`,
-          OccuredAt: new Date().toISOString(),
-          EmailSentTo: `${monitor.alert_email}`,
-        });
 
-        sendEmail({
-          to: monitor.alert_email,
-          subject: `Device "${monitor.name}" is down`,
-          message: `"${monitor.name}" - This device's connection has been lost and needs your attention now!`,
-        });
-      }
-    },
-    monitor.timeout * 1000 + 10000,
-  );
+  if (monitor.pause) {
+    await monitor.save(); 
+    return;
+  }
 
-  console.log(monitor.timer);
+  const delay = monitor.timeout * 1000 + 10000;
 
-  monitor.expiresAt = new Date(Date.now() + monitor.timeout * 1000 + 10000);
-  monitor.save();
+  timers[id] = setTimeout(async () => {
+    console.log({
+      ALERT: `Device - ${monitor.name} is down`,
+      OccuredAt: new Date().toISOString(),
+      EmailSentTo: `${monitor.alert_email}`,
+    });
+
+    await sendEmail({
+      to: monitor.alert_email,
+      subject: `Device "${monitor.name}" is down`,
+      message: `"${monitor.name}" - Connection lost!`,
+    });
+    
+    delete timers[id]; 
+  }, delay);
+
+  monitor.expiresAt = new Date(Date.now() + delay);
+  await monitor.save(); 
 }
 
 exports.registerMonitor = catchAsync(async (req, res, next) => {
@@ -62,6 +68,7 @@ exports.sendHeartbeat = catchAsync(async (req, res, next) => {
   }
 
   monitor.pause = false;
+  monitor.expiresAt = undefined;
   createTimer(monitor);
 
   res.status(200).json({
@@ -74,7 +81,7 @@ exports.pauseMonitor = catchAsync(async (req, res, next) => {
   const id = req.params.id;
 
   let monitor = await Monitor.findOne({ _id: id });
-  console.log(monitor);
+
 
   if (!monitor) {
     return next(new AppError("No monitor was found with this id", 404));

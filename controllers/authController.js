@@ -78,6 +78,10 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   // This verifies the authenticity of the bearer token
   const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+  console.log(decoded)
+
+
+  // The decoded is an object {_id, iat: (issuedAt) & exp: (expiresAt)}
 
   const user = await User.findOne({ _id: decoded.id });
 
@@ -100,6 +104,8 @@ exports.protect = catchAsync(async (req, res, next) => {
   next();
 });
 
+
+// This is where authorization happens
 exports.restrictedTo = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
